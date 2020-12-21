@@ -210,7 +210,6 @@ var ff = new function() {
 
             if(warnText !== false) {
                 var pos = $elm.position();
-                print("******* pos", pos);
                 var x = 0;
                 var y = pos.top + $elm.outerHeight();
                 $warn.text(warnText);
@@ -381,7 +380,7 @@ var ff = new function() {
             
             var val = $elm.val();
             obj[saveKey] = val;
-            obj[id + ":unixtime"] = ut;
+            obj[saveKey + ":unixtime"] = ut;
             var warnText = false;
             if("relativeMinDate" in opt && ut < (nowDateUt + (opt["relativeMinDate"] * 86400))) {
                 var limitDate = nowDateUt + (opt["relativeMinDate"] * 86400);
@@ -399,7 +398,6 @@ var ff = new function() {
             
             if(warnText !== false) {
                 var pos = $elm.position();
-                print("##### pos", pos);
                 var x = 0;
                 var y = pos.top + $elm.outerHeight();
                 $warn.text(warnText);
