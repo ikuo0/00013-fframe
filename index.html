@@ -22,7 +22,17 @@
         
         <!-- start -->
         <script type="text/javascript">
-            ff.ApplyRouter("./source", {"ajax-cache": false});
+            delay(1)
+            .then(function() {
+                ff.ApplyRouter("./source", $("body"), {"ajax-cache": false});
+                return true;
+            })
+            .then(function() {
+                if(!ff.PathInfo.pageKey) {
+                    window.location = "#!input-form";
+                }
+                return true;
+            });
         </script>
     </head>
     

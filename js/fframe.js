@@ -210,7 +210,7 @@ var ff = new function() {
 
             if(warnText !== false) {
                 var pos = $elm.position();
-                var x = 0;
+                var x = pos.left;
                 var y = pos.top + $elm.outerHeight();
                 $warn.text(warnText);
                 $warn.css({"top": y, "left": x});
@@ -251,7 +251,7 @@ var ff = new function() {
 
             if(warnText !== false) {
                 var pos = $elm.position();
-                var x = 0;
+                var x = pos.left;
                 var y = pos.top + $elm.outerHeight();
                 $warn.text(warnText);
                 $warn.css({"top": y, "left": x});
@@ -339,7 +339,7 @@ var ff = new function() {
 
             if(warnText !== false) {
                 var pos = $elm.position();
-                var x = 0;
+                var x = pos.left;
                 var y = pos.top + $elm.outerHeight();
                 $warn.text(warnText);
                 $warn.css({"top": y, "left": x});
@@ -398,7 +398,7 @@ var ff = new function() {
             
             if(warnText !== false) {
                 var pos = $elm.position();
-                var x = 0;
+                var x = pos.left;
                 var y = pos.top + $elm.outerHeight();
                 $warn.text(warnText);
                 $warn.css({"top": y, "left": x});
