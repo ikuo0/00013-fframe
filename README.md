@@ -2,7 +2,7 @@
 javascript functional framework
 
 # fframeフレームワークについて
-ブラウザJavaScript用に変数同期、バリデーション、SPA機能を提供します 
+ブラウザJavaScript用に変数同期、バリデーション、SPA機能を提供します  
 いわゆるフレームワークと異なりformやページ単位で包括せずに一つの入力項目にだけ機能を提供するといった使い方ができます
 
 ## 使い方
