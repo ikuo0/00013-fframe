@@ -177,14 +177,21 @@ var ff = new function() {
         "color": "#ff0000",
         "font-weight": 800,
     };
-    self.setError = function(obj, id, isError, errorMessage) {
+    self.setError = function(obj, key, isError, errorMessage, opt) {
         if(!("FormError" in obj)) {
             obj["FormError"] = {};
         }
-        obj["FormError"][id] = {
+        obj["FormError"][key] = {
             "IsError": isError,
             "ErrorMessage": errorMessage,
         }
+    }
+    self.ErrorSum = function(obj) {
+        var errorSum = 0;
+        for(k in obj["FormError"]) {
+            errorSum += obj["FormError"][k]["IsError"];
+        }
+        return errorSum;
     }
     self.AddSyncroAndValid_Text = function (obj, id, opt) {// id = string or JQuery Object
         var me = this;
@@ -215,9 +222,9 @@ var ff = new function() {
                 $warn.text(warnText);
                 $warn.css({"top": y, "left": x});
                 $warn.show();
-                me.setError(obj, id, 1, warnText);
+                me.setError(obj, saveKey, 1, warnText);
             } else {
-                me.setError(obj, id, 0, "OK");
+                me.setError(obj, saveKey, 0, "OK");
             }
 
             if("OnChange" in obj) {
@@ -239,7 +246,9 @@ var ff = new function() {
         $elm.after($warn);
         $elm.on("change", function() {
             $warn.hide();
-            var val = $elm.val();
+            var val = parseInt($elm.val());
+            print("$elm.val()", $elm.val());
+            print("val", val);
             obj[saveKey] = val;
             var warnText = false;
             if(minNumber && val < minNumber) {
@@ -256,9 +265,9 @@ var ff = new function() {
                 $warn.text(warnText);
                 $warn.css({"top": y, "left": x});
                 $warn.show();
-                me.setError(obj, id, 1, warnText);
+                me.setError(obj, saveKey, 1, warnText);
             } else {
-                me.setError(obj, id, 0, "OK");
+                me.setError(obj, saveKey, 0, "OK");
             }
 
             if("OnChange" in obj) {
@@ -344,9 +353,9 @@ var ff = new function() {
                 $warn.text(warnText);
                 $warn.css({"top": y, "left": x});
                 $warn.show();
-                me.setError(obj, id, 1, warnText);
+                me.setError(obj, saveKey, 1, warnText);
             } else {
-                me.setError(obj, id, 0, "OK");
+                me.setError(obj, saveKey, 0, "OK");
             }
 
             if("OnChange" in obj) {
@@ -403,9 +412,9 @@ var ff = new function() {
                 $warn.text(warnText);
                 $warn.css({"top": y, "left": x});
                 $warn.show();
-                me.setError(obj, id, 1, warnText);
+                me.setError(obj, saveKey, 1, warnText, opt);
             } else {
-                me.setError(obj, id, 0, "OK");
+                me.setError(obj, saveKey, 0, "OK", opt);
             }
             
             if("OnChange" in obj) {
