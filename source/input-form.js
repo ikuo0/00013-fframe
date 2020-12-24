@@ -27,17 +27,15 @@
             ff.SyncroAndValid_CheckBox(me.formCtrl, ["#checkbox-only1", "#checkbox-only2", "#checkbox-only3"], {"only": 2});
             ff.SyncroAndValid_Radio(me.formCtrl, ["#radio1", "#radio2", "#radio3"], {"require": 1});
             
-            setTimeout(function() {
-                // Error check
-                var errorSum = ff.ErrorSum(me.formCtrl);
-                if(errorSum > 0) {
-                    ff.MessageBox_Danger("入力エラーがあります", 5000);
-                } else {
-                    ff.MessageBox_Info("入力エラーなし", 1500);
-                }
-                print(me.formCtrl);
-                $("#show-variable").text(JSON.stringify(me.formCtrl, undefined, 4));
-            }, 10);
+            // Error check
+            var errorSum = ff.ErrorSum(me.formCtrl);
+            if(errorSum > 0) {
+                ff.MessageBox_Danger("入力エラーがあります", 5000);
+            } else {
+                ff.MessageBox_Info("入力エラーなし", 1500);
+            }
+            print(me.formCtrl);
+            $("#show-variable").text(JSON.stringify(me.formCtrl, undefined, 4));
         });
     }
     self.start = function() {
