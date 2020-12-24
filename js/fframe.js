@@ -14,6 +14,57 @@ function delay(ms) {
 var ff = new function() {
     var self = this;
     self.PathInfo = {};
+    
+    ////////////////////////////////////////
+    // etc functions
+    ////////////////////////////////////////
+    self.print = function() {
+        console.log.apply(console, arguments)
+    }
+    self.delay = function(ms) {
+        return new Promise(function(resolve) {
+            setTimeout(function() {
+                resolve(true);
+            }, ms);
+        });
+    }
+    self.argsort = function(a) {
+        var tmp = [];
+        for(i in a) {
+            tmp.push([i, a]);
+        }
+        tmp.sort(function(a, b) {
+            return a[1] - b[1];
+        })
+        var res = [];
+        for(i in tmp) {
+            res.push(tmp[i][0]);
+        }
+        return res;
+    }
+    self.argmin = function(a) {
+        var me = this;
+        var arr = me.argsort(a);
+        return arr[0];
+    }
+    self.argmax = function(a) {
+        var me = this;
+        var arr = me.argsort(a);
+        return arr[arr.length - 1];
+    }
+    self.min = function(arr) {
+        var fn = function (a, b) {return Math.min(a, b);};
+        return arr.reduce(fn);
+    }
+    self.max = function(arr) {
+        var fn = function (a, b) {return Math.max(a, b);};
+        return arr.reduce(fn);
+    }
+    self.sum = function(arr) {
+        var fn = function (a, b) {return a + b;};
+        return arr.reduce(fn, 0);
+    }
+    
     ////////////////////////////////////////
     // router
     ////////////////////////////////////////
@@ -341,8 +392,8 @@ var ff = new function() {
             var val = $elm.val();
             obj[saveKey] = val;
             var warnText = false;
-            var totalLength = total + (digits.length - 1);
-            if(require && val.length != totalLength) {
+            var valLength = val.replace(/ /g, "").length;
+            if(require && valLength != total) {
                 warnText = "入力必須です";
             }
 
@@ -368,7 +419,6 @@ var ff = new function() {
     self.AddSyncroAndValid_DatePicker = function(obj, id, opt) {
         var me = this;
         var $elm = (typeof id == "string") ? $(id): id;
-        if(!("error" in obj)) {obj["error"] = {};}
         var $warn = $("<div>", {"css": me.warningDivCSS});
         var saveKey = (typeof id == "string") ? id: opt["key"];
         obj[saveKey] = "value" in opt ? opt["value"]: "";
@@ -421,5 +471,147 @@ var ff = new function() {
                 obj["OnChange"].apply(obj, [id, ut]);
             }
         });
+    }
+    self.SyncroAndValid_CheckBox = function(obj, idArr, opt) {
+        var me = this;
+        var $elms = [];
+        var keys = [];
+        var $warn = $("<div>", {"css": me.warningDivCSS});
+        for(i in idArr) {
+            var $elm = (typeof idArr[i] == "string") ? $(idArr[i]): idArr[i];
+            $elms.push($elm);
+        }
+        if("keys" in opt) {
+            for(i in $elms) {
+                keys.push(opt["keys"][i]);
+            }
+        } else {
+            for(i in $elms) {
+                keys.push("#" + $elms[i].attr("id"));
+            }
+        }
+        
+        var warnbox_id = $elms[0].attr("id") + "_warn_div";
+        $("#" + warnbox_id).remove();// 前回出した物があれば削除する
+        $warn.attr("id", warnbox_id);
+        
+        for(i in $elms) {
+            var $elm = $elms[i];
+            if("checked" in opt && opt["checked"][i] != false) {
+                $elm.prop("checked", true);
+            }
+            var checked = $elm.prop("checked");
+            obj[keys[i]] = checked;
+            obj[keys[i] + ":int"] = checked ? 1: 0;
+        }
+        var checked = [];
+        for(i in keys) {
+            checked.push(obj[keys[i]])
+        }
+        var checkedNum = checked.map(function(v) {
+            return v != false ? 1: 0;
+        });
+        var total = me.sum(checkedNum);
+        var warnText = false;
+        if("more" in opt && total < opt["more"]) {
+            warnText = opt["more"] + "個以上選択して下さい";
+        }
+        if("only" in opt && total != opt["only"]) {
+            warnText = opt["only"] + "個選択して下さい";
+        }
+        if(warnText !== false) {
+            var xArr = [];
+            var yArr = [];
+            for(i in $elms) {
+                var pos = $elms[i].position();
+                xArr.push(pos.left);
+                yArr.push(pos.top + $elm.outerHeight());
+            }
+            var xidx = me.argmin(xArr);
+            var yidx = me.argmax(yArr);
+            var $yelm = $elms[yidx];
+            var pos = $yelm.position();
+            $yelm.after($warn);
+            $warn.text(warnText);
+            $warn.css({"top": pos.top + $yelm.outerHeight(), "left": $elms[xidx].position().left});
+            $warn.show();
+            for(i in keys) {
+                me.setError(obj, keys[i], 1, warnText);
+                print(obj.FormError);
+            }
+        } else {
+            for(i in keys) {
+                me.setError(obj, keys[i], 0, "OK");
+            }
+        }
+    }
+    self.SyncroAndValid_Radio = function(obj, idArr, opt) {
+        var me = this;
+        var $elms = [];
+        var keys = [];
+        var $warn = $("<div>", {"css": me.warningDivCSS});
+        for(i in idArr) {
+            var $elm = (typeof idArr[i] == "string") ? $(idArr[i]): idArr[i];
+            $elms.push($elm);
+        }
+        if("keys" in opt) {
+            for(i in $elms) {
+                keys.push(opt["keys"][i]);
+            }
+        } else {
+            for(i in $elms) {
+                keys.push("#" + $elms[i].attr("id"));
+            }
+        }
+        
+        var warnbox_id = $elms[0].attr("id") + "_warn_div";
+        $("#" + warnbox_id).remove();// 前回出した物があれば削除する
+        $warn.attr("id", warnbox_id);
+        
+        for(i in $elms) {
+            var $elm = $elms[i];
+            if("checked" in opt && opt["checked"][i] != false) {
+                $elm.prop("checked", true);
+            }
+            var checked = $elm.prop("checked");
+            obj[keys[i]] = checked;
+            obj[keys[i] + ":int"] = checked ? 1: 0;
+        }
+        var checked = [];
+        for(i in keys) {
+            checked.push(obj[keys[i]])
+        }
+        var checkedNum = checked.map(function(v) {
+            return v != false ? 1: 0;
+        });
+        var total = me.sum(checkedNum);
+        var warnText = false;
+        if("require" in opt && total < 1) {
+            warnText = "選択して下さい";
+        }
+        if(warnText !== false) {
+            var xArr = [];
+            var yArr = [];
+            for(i in $elms) {
+                var pos = $elms[i].position();
+                xArr.push(pos.left);
+                yArr.push(pos.top + $elm.outerHeight());
+            }
+            var xidx = me.argmin(xArr);
+            var yidx = me.argmax(yArr);
+            var $yelm = $elms[yidx];
+            var pos = $yelm.position();
+            $yelm.after($warn);
+            $warn.text(warnText);
+            $warn.css({"top": pos.top + $yelm.outerHeight(), "left": $elms[xidx].position().left});
+            $warn.show();
+            for(i in keys) {
+                me.setError(obj, keys[i], 1, warnText);
+            }
+        } else {
+            for(i in keys) {
+                me.setError(obj, keys[i], 0, "OK");
+            }
+        }
     }
 }();
